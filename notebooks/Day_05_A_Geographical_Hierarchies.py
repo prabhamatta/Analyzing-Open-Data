@@ -107,25 +107,9 @@ c = census.Census(key=settings.CENSUS_KEY)
 
 # call the API and instantiate `df`
 df = DataFrame(c.sf1.get('NAME,P0010001', geo={'for':'state:*'}))
-type(df['P0010001'])
-
-
-# <codecell>
-
 # convert the population to integer
 df['P0010001'] = df['P0010001'].astype(np.int)
 df.head()
-
-# <codecell>
-
-type(df['P0010001'])
-
-# <codecell>
-
-len(df) #expecting 51, got 52
-#df.NAME
-#df['NAME'] =='California' #for each elem in the series, asks if it is "California
-sates_df = df[df['NAME'] !='Puerito Rico']
 
 # <markdowncell>
 
@@ -433,10 +417,6 @@ tracts_df.head()
 ## write a generator all census places
 
 
-
-# <codecell>
-
-#add county
 
 # <headingcell level=1>
 

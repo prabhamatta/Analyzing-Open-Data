@@ -115,11 +115,13 @@ r = requests.get(url)
 
 # <codecell>
 
-# FILL IN WITH YOUR CODE
-#print r.json()
-#print r.json()[1:]
+# Including Puerto Rico
+__builtin__.sum([int(lst[0]) for lst in r.json()[1:] if lst[1]] )
 
-__builtin__.sum([int(lst[0]) for lst in r.json()[1:] if lst[1 != 'Puerto Rico']] )
+# <codecell>
+
+# Excluding Puerto Rico
+__builtin__.sum([int(lst[0]) for lst in r.json()[1:] if lst[1] != 'Puerto Rico'] )
 
 # <headingcell level=1>
 
@@ -158,6 +160,10 @@ __builtin__.sum([int(lst[0]) for lst in r.json()[1:] if lst[1 != 'Puerto Rico']]
 # <codecell>
 
 c.sf1.get(('NAME', 'P0010001'), {'for': 'state:%s' % states.CA.fips})
+
+# <codecell>
+
+c.sf1.get(('NAME', 'P0010001'), {'for': 'state:%s' % states.CA.fips})[0]['P0010001']
 
 # <codecell>
 

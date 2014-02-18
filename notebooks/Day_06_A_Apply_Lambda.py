@@ -43,7 +43,7 @@ list(string.lowercase)
 
 # create a pandas Series out of the list of lowercase letters
 
-lower = Series(list(string.lowercase), name='lower')
+lower = Series(list(string.lowercase))
 print type(lower)
 lower.head()
 

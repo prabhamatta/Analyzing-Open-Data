@@ -111,7 +111,9 @@ import string
 # make a generator comprehension -- generate items on demand
 
 k = (s for s in list(string.lowercase))
-k
+k #--> generator
+k = [s for s in list(string.lowercase)]
+k #--> list comprehension
 
 # <codecell>
 
@@ -147,7 +149,7 @@ __builtin__.sum(islice(my_count(0,1), 101L))
 
 from itertools import islice
 
-def triangular():
+def triangular(): #--> Fibonaccci series?
     n = 1
     i = 1
     while True:
@@ -362,6 +364,12 @@ a2.ndim, a2.shape
 
 a2.dtype
 
+# <codecell>
+
+a3 = np.array(([1,2], ['a',4]))
+a3.ndim, a3.shape
+a3.dtype
+
 # <headingcell level=2>
 
 # np.arange
@@ -379,6 +387,10 @@ from numpy import arange
 # <codecell>
 
 type(arange(10))
+
+# <codecell>
+
+np.arange(3,7) #--> why did it take only 1 as interval
 
 # <codecell>
 
@@ -406,7 +418,7 @@ a3[1,2]
 
 # <codecell>
 
-# check that reshape works
+# check that reshape works --> Nice!!
 
 for i in range(8):
     for j in range(8):

@@ -9,6 +9,10 @@
 
 # <codecell>
 
+#--??how am i able to access plt.?? w/o importing matplotlib
+
+# <codecell>
+
 %pylab --no-import-all inline
 
 # <codecell>

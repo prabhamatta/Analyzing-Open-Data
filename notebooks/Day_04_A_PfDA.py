@@ -88,10 +88,27 @@ open(path).readline()
 import json
 records = [json.loads(line) for line in open(path)]
 
+# <markdowncell>
+
+# len(records)
+# records
+
 # <codecell>
 
-len(records)
-records
+type(records) #--> list
+type(records[0]) #--> dict
+
+# <codecell>
+
+records[0]
+
+# <markdowncell>
+
+# records[0]
+
+# <codecell>
+
+records[1]
 
 # <codecell>
 
@@ -119,6 +136,10 @@ df
 # <codecell>
 
 frame = DataFrame(records)
+
+# <codecell>
+
+frame
 
 # <codecell>
 

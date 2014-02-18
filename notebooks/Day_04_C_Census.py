@@ -151,15 +151,30 @@ r = requests.get(url)
 
 # FILL IN
 # drop the header record
+r.json()[1:]
+
+# <codecell>
+
+
 from itertools import islice
 # total population including PR is 312471327
 
+pop = __builtin__.sum([ int(st[0]) for st in r.json()[1:]])
 
+assert pop == 312471327
 
 # <codecell>
 
 # FILL IN
 # exclude PR:  308745538
+popln = 0
+for st in r.json()[1:]:
+    if st[1] != 'Puerto Rico':
+        popln += int(st[0])
+        
+print popln
+
+assert popln == 308745538
 
 # <codecell>
 
@@ -173,7 +188,12 @@ df.head()
 # FILL IN
 # calculate the total population using df
 
+type(df)
+#test= df['P0010001'].sum()
+#df['P0010001'].value_counts()
+#test
 
+df['P0010001'].astype(int).sum()
 
 # <codecell>
 
