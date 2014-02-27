@@ -260,7 +260,7 @@ def showPopulationPyramidPlot(df, state, male_fields, female_fields):
     bar1 = ax1.barh(bar_ypos, [ val for label, val in male_list ], align='center')
     ax1.set_xlim((0,max_val))
     ax1.set_yticks(bar_ypos)
-    ax1.set_yticklabels([ male_fields[label][male_fields[label].find('!!')+3:] for label, val in male_list ])
+    ax1.([ male_fields[label][male_fields[label].find('!!')+3:] for label, val in male_list ])
     ax1.set_xlabel('People')
     ax1.set_title('Male Population by Age')
     ax1.grid(True)
@@ -283,4 +283,6 @@ showPopulationPyramidPlot(gender_df, 'Illinois', male_fields, female_fields)
 
 # <codecell>
 
+import numpy as np
+np.arange(10)
 

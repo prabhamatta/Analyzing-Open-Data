@@ -34,7 +34,7 @@ ISO8601 = "%Y-%m-%dT%H:%M:%SZ"
 
 settings = {
             'project': 'prabhamatta',
-            'repo': 'nlp_information_extraction',
+            'repo': 'nlp_github_deliberations',
             'github_token': github_token
             }
 

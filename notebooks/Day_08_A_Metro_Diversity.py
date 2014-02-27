@@ -96,18 +96,310 @@
 
 # FILL IN WITH YOUR CODE
 
+import census
+import settings
+import us
 
 
+import time
+from pandas import DataFrame, Series, Index
+import pandas as pd
+from itertools import islice
+
+c = census.Census(key=settings.CENSUS_KEY)
+
+# <codecell>
 
 
+# def msas(variables="NAME"):
+#     # tabulate a set of fips codes for the states
+#     states_fips = set([s.fips for s in us.states.STATES])
+#     geo = {'for':'metropolitan statistical area/micropolitan statistical area:*', 
+#                'in':'state:*'}
+               
+#     for msa in c.sf1.get(variables, geo=geo):
+#         if msa['state'] in states_fips:
+#             yield msa
 
 
+def msas(variables="NAME"):
+    
+     for state in us.STATES:
+        geo = {'for':'metropolitan statistical area/micropolitan statistical area:*', 
+               'in':'state:{state_fips}'.format(state_fips=state.fips)
+               }
+    
+        for msa in c.sf1.get(variables, geo=geo):
+            yield msa
 
 
+msa_list = list(islice(msas("NAME,P0010001"), None))
+len(msa_list)
+
+# <codecell>
+
+msa_list[:5]
+
+# <codecell>
+
+df = DataFrame(msa_list)
+
+# <codecell>
+
+df.groupby('metropolitan statistical area/micropolitan statistical area').count()
+type(df)
+
+# <codecell>
+
+df[['P0010001', 'state']] = \
+    df[['P0010001', 'state']].astype('int')
+
+# <codecell>
+
+#initially done like this
+#grouped_msa = df.groupby('metropolitan statistical area/micropolitan statistical area').sum() 
+#---> groups by msa---> have name, popn, state as columns
+#but did not work to get list of msa
+#therefore changed the strategy to the following
+
+grouped_msa = df.groupby('metropolitan statistical area/micropolitan statistical area')
+
+# <codecell>
+
+s= grouped_msa['P0010001'].sum()
+s
+
+# <codecell>
+
+type(s)
+
+# <codecell>
+
+#to get the msa_ids
+msa_ids = s.index
+msa_ids
+
+# <codecell>
+
+msa_ids
+
+# <codecell>
+
+#to access list of states of each msa
+for msa in s.index:
+    print msa, s[msa],list(grouped_msa.get_group(msa).state)
+
+# <codecell>
 
 
+def P005_range(n0,n1): 
+    return tuple(('P005'+ "{i:04d}".format(i=i) for i in xrange(n0,n1)))
+
+P005_vars = P005_range(1,18)
+P005_vars_str = ",".join(P005_vars)
+P005_vars_with_name = ['NAME'] + list(P005_vars)
 
 
+# http://manishamde.github.io/blog/2013/03/07/pandas-and-python-top-10/#create
+def convert_to_rdotmap(row):
+    """takes the P005 variables and maps to a series with White, Black, Asian, Hispanic, Other
+    Total and Name"""
+    return pd.Series({'Total':row['P0050001'],
+                      'White':row['P0050003'],
+                      'Black':row['P0050004'],
+                      'Asian':row['P0050006'],
+                      'Hispanic':row['P0050010'],
+                      'Other': row['P0050005'] + row['P0050007'] + row['P0050008'] + row['P0050009'],
+                      'Name': row['NAME']
+                      }, index=['Name', 'Total', 'White', 'Black', 'Hispanic', 'Asian', 'Other'])
+
+
+def normalize(s):
+    """take a Series and divide each item by the sum so that the new series adds up to 1.0"""
+    total = np.sum(s)
+    return s.astype('float') / total
+
+
+def entropy(series):
+    """Normalized Shannon Index"""
+    # a series in which all the entries are equal should result in normalized entropy of 1.0
+    
+    # eliminate 0s
+    series1 = series[series!=0]
+
+    # if len(series) < 2 (i.e., 0 or 1) then return 0
+    
+    if len(series) > 1:
+        # calculate the maximum possible entropy for given length of input series
+        max_s = -np.log(1.0/len(series))
+    
+        total = float(sum(series1))
+        p = series1.astype('float')/float(total)
+        return sum(-p*np.log(p))/max_s
+    else:
+        return 0.0
+
+    
+def convert_P005_to_int(df):
+    # do conversion in place
+    df[list(P005_vars)] = df[list(P005_vars)].astype('int')
+    return df
+    
+
+def diversity(r):
+
+    """Returns a DataFrame with the following columns
+    """
+    df = DataFrame(r)
+    df = convert_P005_to_int(df)
+    # df[list(P005_vars)] = df[list(P005_vars)].astype('int')
+    df1 = df.apply(convert_to_rdotmap, axis=1)
+    
+    df1['entropy5'] = df1[['Asian','Black','Hispanic','White','Other']].apply(entropy,axis=1)
+    df1['entropy4'] = df1[['Asian','Black','Hispanic','White']].apply(entropy,axis=1)
+    return df1
+
+# <codecell>
+
+#http://api.census.gov/data/2010/sf1?get=P0010001&for=metropolitan+statistical+area/micropolitan+statistical+area:11260&in=state:02
+def get_all_msas(variables='NAME'):
+    count = 0
+    for msa in s.index:
+
+        for state in list(grouped_msa.get_group(msa).state):
+            geo = {'for':'metropolitan statistical area/micropolitan statistical area:{msa_fips}'.format(msa_fips=msa), 
+                   'in':'state:{state_fips}'.format(state_fips=state)
+                  }
+           
+            for each_msa in c.sf1.get(variables, geo=geo):
+                count +=1
+                if msa == '35620':
+                    print state
+                    print each_msa
+                yield each_msa
+
+
+# <codecell>
+
+r = list(get_all_msas(P005_vars_with_name))
+
+# <codecell>
+
+len(r)
+
+# <codecell>
+
+test1= DataFrame(r)
+len(test1)
+test1 = test1.apply(convert_P005_to_int, axis=1)
+
+test1 = test1.groupby('metropolitan statistical area/micropolitan statistical area').sum()
+test1.head()
+
+# <codecell>
+
+import numpy as np
+df_diversity = diversity(test1)
+df_diversity
+
+# <codecell>
+
+temp_diversity = df_diversity
+
+# <codecell>
+
+type(df_diversity)
+
+# <codecell>
+
+#'Asian','Black','Hispanic', 'Other', 'Total', 'White',
+#  'entropy4', 'entropy5', 'entropy_rice', 'gini_simpson',
+#'p_Asian', 'p_Black', 'p_Hispanic', 'p_Other','p_White'
+df_diversity['p_Asian'] = df_diversity['Asian']/df_diversity['Total']
+df_diversity['p_Black'] = df_diversity['Black']/df_diversity['Total']
+df_diversity['p_Hispanic'] = df_diversity['Hispanic']/df_diversity['Total']
+df_diversity['p_Other'] = df_diversity['Other']/df_diversity['Total']
+df_diversity['p_White'] = df_diversity['White']/df_diversity['Total']
+
+# <codecell>
+
+
+def entropyRice(series):
+    """Normalized Shannon Index"""
+    # a series in which all the entries are equal should result in normalized entropy of 1.0
+    
+    # eliminate 0s
+    series1 = series[series!=0]
+    
+    if len(series) > 1:
+        # calculate the maximum possible entropy for given length of input series
+        max_s = -np.log(1.0/len(series))
+    
+        total = float(sum(series1))
+        p = series1.astype('float')/float(total)
+#         print series['Other']
+        p_other = series['Other'].astype('float')/float(total)
+        E_other = -(p_other*np.log(p_other))/max_s
+#         print E_other
+        return (sum(-p*np.log(p))/max_s) - E_other
+    else: 
+        return 0.0
+
+def giniSimpson(series):
+    """Normalized Shannon Index"""
+    # a series in which all the entries are equal should result in normalized entropy of 1.0
+    
+    # eliminate 0s
+    series1 = series[series!=0]
+    
+    if len(series) > 1:
+        # calculate the maximum possible entropy for given length of input series
+        max_s = -np.log(1.0/len(series))
+    
+        total = float(sum(series1))
+        p = series1.astype('float')/float(total)
+        return sum(p*(1-p))
+    else: 
+        return 0.0 
+    
+    
+df_diversity['gini_simpson'] = df_diversity[['Asian','Black','Hispanic','White','Other']].apply(giniSimpson,axis=1)
+
+df_diversity['entropy_rice'] = df_diversity[['Asian','Black','Hispanic','White','Other']].apply(entropyRice,axis=1)
+
+# <codecell>
+
+df_diversity.head()
+
+# <codecell>
+
+msas_df = df_diversity
+#df_diversity.sort_index(by="entropy5", ascending=False).head()
+
+# <codecell>
+
+assert len(msas_df) == 942  
+type(msas_df)
+
+# <codecell>
+
+top_10_metros = msas_df.sort_index(by='Total', ascending=False)[:10]
+msa_codes_in_top_10_pop_sorted_by_entropy_rice = list(top_10_metros.sort_index(by='entropy_rice', 
+                                                ascending=False).index) 
+type(top_10_metros)
+top_10_metros
+# msa_codes_in_top_10_pop_sorted_by_entropy_rice
+to_unicode(msa_codes_in_top_10_pop_sorted_by_entropy_rice)
+# [u'Houston-Sugar Land-Baytown, TX Metro Area',
+#  u'New York-Northern New Jersey-Long Island, NY-NJ-PA Metro Area (part)',
+#  u'Washington-Arlington-Alexandria, DC-VA-MD-WV Metro Area (part)',
+#  u'Los Angeles-Long Beach-Santa Ana, CA Metro Area',
+#  u'Dallas-Fort Worth-Arlington, TX Metro Area',
+#  u'Miami-Fort Lauderdale-Pompano Beach, FL Metro Area',
+#  u'Chicago-Joliet-Naperville, IL-IN-WI Metro Area (part)',
+#  u'Atlanta-Sandy Springs-Marietta, GA Metro Area',
+#  u'Philadelphia-Camden-Wilmington, PA-NJ-DE-MD Metro Area (part)',
+#  u'Boston-Cambridge-Quincy, MA-NH Metro Area (part)']
 
 # <codecell>
 
@@ -122,6 +414,7 @@ def test_msas_df(msas_df):
      'entropy4', 'entropy5', 'entropy_rice', 'gini_simpson','p_Asian', 'p_Black',
      'p_Hispanic', 'p_Other','p_White'])  
     
+    #--> what does this assert mean?
     assert min_set_of_columns & set(msas_df.columns) == min_set_of_columns
     
     # https://www.census.gov/geo/maps-data/data/tallies/national_geo_tallies.html

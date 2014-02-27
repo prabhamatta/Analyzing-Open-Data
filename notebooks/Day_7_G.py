@@ -171,18 +171,6 @@ def zip_code_tabulation_areas(variables="NAME"):
 
 # <codecell>
 
-#islice(iterable, stop)
-#islice(iterable, start, stop[, step])
-
-# islice('ABCDEFG', 2) --> A B
-# islice('ABCDEFG', 2, 4) --> C D
-# islice('ABCDEFG', 2, None) --> C D E F G
-# islice('ABCDEFG', 0, None, 2) --> A C E G
-list(islice('ABCDEFG', 1)) #--> islice(iterable, stop)
-
-# <codecell>
-
-
 list(islice(msas(), 1))
 
 # <codecell>
@@ -254,45 +242,11 @@ list(islice(zip_code_tabulation_areas(), 1))
 # 
 # In this notebook, we will relate the Racial Dot Map 5-category scheme to the P005\* variables.
 
-# <rawcell>
-
-# <concept name="P5. HISPANIC OR LATINO ORIGIN BY RACE [17]">
-# <variable name="P0050001" concept="P5. HISPANIC OR LATINO ORIGIN BY RACE [17]">Total population</variable>
-# ----    
-# <variable name="P0050002" concept="P5. HISPANIC OR LATINO ORIGIN BY RACE [17]">Not Hispanic or Latino:</variable>
-# <variable name="P0050003" concept="P5. HISPANIC OR LATINO ORIGIN BY RACE [17]">Not Hispanic or Latino: !! White alone</variable>
-# <variable name="P0050004" concept="P5. HISPANIC OR LATINO ORIGIN BY RACE [17]">Not Hispanic or Latino: !! Black or African American alone</variable>
-# <variable name="P0050005" concept="P5. HISPANIC OR LATINO ORIGIN BY RACE [17]">Not Hispanic or Latino: !! American Indian and Alaska Native alone</variable>
-# <variable name="P0050006" concept="P5. HISPANIC OR LATINO ORIGIN BY RACE [17]">Not Hispanic or Latino: !! Asian alone</variable>
-# <variable name="P0050007" concept="P5. HISPANIC OR LATINO ORIGIN BY RACE [17]">Not Hispanic or Latino: !! Native Hawaiian and Other Pacific Islander alone</variable>
-# <variable name="P0050008" concept="P5. HISPANIC OR LATINO ORIGIN BY RACE [17]">Not Hispanic or Latino: !! Some Other Race alone</variable>
-# <variable name="P0050009" concept="P5. HISPANIC OR LATINO ORIGIN BY RACE [17]">Not Hispanic or Latino: !! Two or More Races</variable>
-# ----    
-# <variable name="P0050010" concept="P5. HISPANIC OR LATINO ORIGIN BY RACE [17]">Hispanic or Latino:</variable>
-# <variable name="P0050011" concept="P5. HISPANIC OR LATINO ORIGIN BY RACE [17]">Hispanic or Latino: !! White alone</variable>
-# <variable name="P0050012" concept="P5. HISPANIC OR LATINO ORIGIN BY RACE [17]">Hispanic or Latino: !! Black or African American alone</variable>
-# <variable name="P0050013" concept="P5. HISPANIC OR LATINO ORIGIN BY RACE [17]">Hispanic or Latino: !! American Indian and Alaska Native alone</variable>
-# <variable name="P0050014" concept="P5. HISPANIC OR LATINO ORIGIN BY RACE [17]">Hispanic or Latino: !! Asian alone</variable>
-# <variable name="P0050015" concept="P5. HISPANIC OR LATINO ORIGIN BY RACE [17]">Hispanic or Latino: !! Native Hawaiian and Other Pacific Islander alone</variable>
-# <variable name="P0050016" concept="P5. HISPANIC OR LATINO ORIGIN BY RACE [17]">Hispanic or Latino: !! Some Other Race alone</variable>
-# <variable name="P0050017" concept="P5. HISPANIC OR LATINO ORIGIN BY RACE [17]">Hispanic or Latino: !! Two or More Races</variable>
-# </concept>
-
 # <codecell>
 
 # let's get the total population -- tabulated in two variables: P0010001, P0050001
 # P0050002 Not Hispanic or Latino (total) 
 # P0050010 Hispanic or Latino
-
-##This was the code for states
-# def states(variables='NAME'):
-#     geo={'for':'state:*'}
-#     states_fips = set([state.fips for state in us.states.STATES])
-#     # need to filter out non-states
-#     for r in c.sf1.get(variables, geo=geo):
-#         if r['state'] in states_fips:
-#             yield r
-            
 
 r = list(states(('NAME','P0010001','P0050001','P0050002','P0050010')))
 r[:5]
@@ -315,11 +269,6 @@ df[['P0010001', 'P0050001', 'P0050002', 'P0050010']].sum()
 # http://www.census.gov/prod/cen2010/briefs/c2010br-02.pdf Table 1
 (df['P0050010'].sum() == 50477594,
  df['P0050002'].sum() == 258267944)
-
-# <codecell>
-
-#-->to test whether hispanic + non-hispanic = total
-assert np.sum([df['P0050010'].sum(),df['P0050002'].sum()]) == df['P0010001'].sum() 
 
 # <codecell>
 
@@ -367,10 +316,6 @@ P005_vars_str = ",".join(P005_vars)
 P005_vars_with_name = ['NAME'] + list(P005_vars)
 
 P005_vars_with_name
-
-#--> both of these are same
-assert P005_vars_with_name == ['NAME']+list(P005_vars)
-P005_vars
 
 # <codecell>
 
@@ -493,4 +438,28 @@ df2 = diversity(r)
 # <codecell>
 
 df2.sort_index(by='entropy5',ascending=False)
+
+# <codecell>
+
+msas_list = list(islice(msas('NAME,P0010001'),None))
+
+# <codecell>
+
+len(msas_list)
+
+# <codecell>
+
+df = DataFrame(msas_list)
+
+# <codecell>
+
+df.P0010001 = df.P0010001.astype('int')
+
+# <codecell>
+
+df.groupby('metropolitan statistical area/micropolitan statistical area').apply(lambda x:sum(x['P0010001']))
+
+# <codecell>
+
+type(r)
 
