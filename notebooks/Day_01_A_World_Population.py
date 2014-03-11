@@ -14,7 +14,7 @@
 # * to learn a bit about the international context before diving into the US Census.
 # * to get ourselves into looking at the Wikipedia as a data source.
 # 
-# Thinking about populations of various geographic entities is a good place to start with open data.  We can to work with numbers without necessarily involving complicated mathematics.  Just addition if we're lucky. We can also think about geographical locations.  We can build out from our initial explorations in a systematic manner.
+# Thinking about populations of various geographic entities is a good place to start with open data.  We can to work with numbers without necessarily involving complicated mathematics.  Just addition if we're lucky. We can also think about geographical locations.  We can build out from our initial explorations in a systematica manner.
 
 # <headingcell level=1>
 
@@ -24,10 +24,10 @@
 
 # Off the top of your head:
 #     
-#   * What do you think is the current world population?
-#   * How many countries are there?
-#   * How many people are there in the USA?  Canada?  Mexico?  Your favorite country?
-#   * What is the minimum number of countries to add up to 50% of the world's population?  How about 90%?
+#     * What do you think is the current world population?
+#     * How many countries are there?
+#     * How many people are there in the USA?  Canada?  Mexico?  Your favorite country?
+#     * What is the minimum number of countries to add up to 50% of the world's population?  How about 90%?
 #     
 # Now go answer these questions looking on the web.  Find some a source or two or three.
 
@@ -56,7 +56,7 @@ import json
 import requests
 
 pop_json_url = "https://gist.github.com/rdhyee/8511607/raw/f16257434352916574473e63612fcea55a0c1b1c/population_of_countries.json"
-pop_list= requests.get(pop_json_url).json()
+pop_list= requests.get(pop_json_url, verify=False).json()
 pop_list
 
 # <headingcell level=1>
@@ -69,6 +69,11 @@ pop_list
 
 # <codecell>
 
+sum = 0
+for lst in pop_list:
+        sum += lst[2]
+        
+print sum
 
 # <markdowncell>
 
@@ -76,6 +81,12 @@ pop_list
 
 # <codecell>
 
+sum = 0
+for lst in pop_list:
+       if type( lst[0] ) == int:
+            sum += lst[2]
+        
+print sum
 
 # <markdowncell>
 
@@ -83,6 +94,19 @@ pop_list
 
 # <codecell>
 
+factbook_json_url = "https://gist.github.com/rdhyee/8530164/raw/f8e842fe8ccd6e3bc424e3a24e41ef5c38f419e8/world_factbook_poulation.json"
+factbook_list= requests.get(factbook_json_url, verify=False).json()
+factbook_list
+#sum([lst[2] for lst in pop_list])
+
+__builtin__.sum([lst[2] for lst in factbook_list])
+        
+        
+
+# <codecell>
+
+import numpy as np
+np.sum([lst[2] for lst in factbook_list])
 
 # <headingcell level=1>
 

@@ -3,11 +3,44 @@
 
 # <headingcell level=1>
 
-# Exercise : Day_08_A_Metro_Diversity
+# Exercise
 
-# <headingcell level=1>
+# <markdowncell>
 
-# Tasks Done in this ipython notebook:
+# Look at this  [What Makes Houston the Next Great American City? | Travel | Smithsonian](http://www.smithsonianmag.com/travel/what-makes-houston-the-next-great-american-city-4870584/), specifically the calculation represented in
+# 
+# ![Alt text](http://thumbs.media.smithsonianmag.com//filer/Houston-diversity-3.jpg__600x0_q85_upscale.jpg "Optional title")
+# 
+# whose caption is
+# 
+# <blockquote>To assess the parity of the four major U.S. ethnic and racial groups, Rice University researchers used a scale called the Entropy Index. It ranges from 0 (a population has just one group) to 1 (all groups are equivalent). Edging New York for the most balanced diversity, Houston had an Entropy Index of 0.874 (orange bar).</blockquote>
+# 
+# The research report by *Smithsonian Magazine* is
+# [Houston Region Grows More Racially/Ethnically Diverse, With Small Declines in Segregation: A Joint Report Analyzing Census Data from 1990, 2000, and 2010](http://kinder.rice.edu/uploadedFiles/Urban_Research_Center/Media/Houston%20Region%20Grows%20More%20Ethnically%20Diverse%202-13.pdf) by the Kinder Institute for Urban Research & the Hobby Center for the Study of Texas.  
+# 
+# In the report, you'll find the following quotes:
+# 
+# <blockquote>How does Houston’s racial/ethnic diversity compare to the racial/ethnic
+# diversity of other large metropolitan areas? The Houston metropolitan
+# area is the most racially/ethnically diverse.</blockquote>
+# 
+# ....
+# 
+# <blockquote>Houston is one of the most racially/ethnically diverse metropolitan
+# areas in the nation as well. *It is the most diverse of the 10 largest
+# U.S. metropolitan areas.* [emphasis mine] Unlike the other large metropolitan areas, all
+# four major racial/ethnic groups have substantial representation in
+# Houston with Latinos and Anglos occupying roughly equal shares of the
+# population.</blockquote>
+# 
+# ....
+# 
+# <blockquote>Houston has the highest entropy score of the 10 largest metropolitan
+# areas, 0.874. New York is a close second with a score of 0.872.</blockquote>
+# 
+# ....
+# 
+# Tasks in this notebook:
 # 
 # 1. Tabulate all the metropolian/micropolitan statistical areas.  Remember that you have to group various entities that show up separately in the Census API but which belong to the same area.  You should find 942 metropolitan/micropolitan statistical areas in the 2010 Census.
 # 
@@ -22,9 +55,8 @@
 # 
 # 1. Note where the Bay Area stands in terms of the diversity index.
 # 
-# For bonus points:
+# 1. make a bar chart in the style used in the Smithsonian Magazine
 # 
-# * make a bar chart in the style used in the Smithsonian Magazine
 
 # <codecell>
 
@@ -490,7 +522,7 @@ def createBarchart(msas_df,df_bay):
     index = np.arange(n_groups)
     bar_width = 0.20
     
-    opacity = 0.7
+    opacity = 0.4
     error_config = {'ecolor': '0.3'}
     
 #     plt.subplot(1, 2, 1)

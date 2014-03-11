@@ -138,6 +138,12 @@ frame.head()
 import pandas as pd
 import os
 
+os.path.join(MOVIELENS_DIR, 'users.dat')
+
+# <codecell>
+
+
+
 unames = ['user_id', 'gender', 'age', 'occupation', 'zip']
 users = pd.read_table(os.path.join(MOVIELENS_DIR, 'users.dat'), sep='::', header=None,
   names=unames)
@@ -147,12 +153,13 @@ ratings = pd.read_table(os.path.join(MOVIELENS_DIR, 'ratings.dat'), sep='::', he
   names=rnames)
 
 mnames = ['movie_id', 'title', 'genres']
-movies = pd.read_table(os.path.join(MOVIELENS_DIR, 'movies.dat'), sep='::', header=None,
-  names=mnames, encoding='iso-8859-1')
+movies = pd.read_table(os.path.join(MOVIELENS_DIR, 'movies.dat'), sep='::', header=None,names=mnames, encoding='iso-8859-1')
+movies[:5]
 
 # <codecell>
 
-movies[:100]
+movies = pd.read_table(os.path.join(MOVIELENS_DIR, 'movies.dat'), sep='::', header=None,names=mnames)
+movies[:5]
 
 # <codecell>
 
@@ -189,7 +196,7 @@ movies = pd.read_table(movies_file, sep='::', header=None,
 
 # <codecell>
 
-movies[:100]
+movies[:5]
 
 # <codecell>
 
@@ -197,7 +204,7 @@ users[:5]
 
 # <codecell>
 
-movies[:100]
+movies[:5]
 
 # <markdowncell>
 
